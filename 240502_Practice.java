@@ -1,5 +1,3 @@
-//Java
-
 class Print {
     public void repeatAlphabet(String word, int repeatNum) {
         int repeatWordLength = word.length()*repeatNum; //전체 출력 길이를 변수 선언
