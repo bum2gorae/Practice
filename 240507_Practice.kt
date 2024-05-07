@@ -34,3 +34,14 @@ for (f in 1..100) {
         else -> if (f%5 ==0) println("Buzz") else println(f)
     }
 }
+
+//fizzbuzz 좀 더 간결하게 수정
+for (f in 1..100) {
+    when {
+        f%15==0 -> println("FizzBuzz")
+        f%3==0 -> println("Fizz")
+        f%5==0 -> println("Buzz")
+        else -> println(f)
+    }
+}
+
