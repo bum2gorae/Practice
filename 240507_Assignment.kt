@@ -35,3 +35,13 @@ do {
     }
     n++
 } while (n <= 100)
+
+//--------------------------------------------
+//for
+var result: String = ""
+for (a in 1..100) {
+    result += "*"
+    if (a%2 == 1) {
+        println(result)
+    }
+}
