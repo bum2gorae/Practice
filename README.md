@@ -1,6 +1,5 @@
-# Practice
+# App Part Practice
 Intel AI For Future Workforce
-- App Part Practice -
 
 - 240502_Practice : java 제어문
 - 240507_Practice : kotlin 제어문
