@@ -9,3 +9,4 @@ Intel AI For Future Workforce
 - 240510_Practice_1 : compose 버튼 동작 & remember / return 사용
 - 240510_Practice_2 : compose 버튼 동작 & remember / return 안사용
 - 240516_Practice_1 : kotlin SOLID
+- 240520_Practice : kotlin 정렬 / 퀵정렬
