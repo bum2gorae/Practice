@@ -1,3 +1,4 @@
+//android studio scratch에서는 result에서 sort하는 순간 isreverse가 초기화되는 버그가 있음
 class Sort() {
     var isreverse = false
     fun changeMod() {
