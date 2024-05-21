@@ -11,3 +11,4 @@ Intel AI For Future Workforce
 - 240516_Practice_1 : kotlin SOLID
 - 240520_Practice : kotlin 정렬 / 퀵정렬
 - 240521_Practice_1 : kotlin 논리 연습
+- 240521_Practice_2 : kotlin shared preference
