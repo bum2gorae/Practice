@@ -12,3 +12,5 @@ Intel AI For Future Workforce
 - 240520_Practice : kotlin 정렬 / 퀵정렬
 - 240521_Practice_1 : kotlin 논리 연습
 - 240521_Practice_2 : kotlin shared preference
+- 240522_Practice_1 : photo picker 내부폴더의 이미지 불러오기
+- 240522_Practice_2 : image list에서 변경
