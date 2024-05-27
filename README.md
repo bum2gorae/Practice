@@ -15,3 +15,4 @@ Intel AI For Future Workforce
 - 240522_Practice_1 : photo picker 내부폴더의 이미지 불러오기
 - 240522_Practice_2 : image list에서 변경
 - 240524_Practice_1 : kotlin 알고리즘 연습
+- 240527_Assignment : kotiln 알고리즘 연습 // range 뒤에서부터 읽기
