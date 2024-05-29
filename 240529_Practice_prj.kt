@@ -36,7 +36,6 @@ import com.example.ml_kit_practice.ui.theme.ML_Kit_PracticeTheme
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
-import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 
 class MainActivity : ComponentActivity() {
@@ -57,6 +56,10 @@ fun Main() {
     var tranText by remember { mutableStateOf("") }
     var textCount by remember { mutableIntStateOf(0) }
     val textSize by remember { mutableIntStateOf(20) }
+//    val translated = TranslationPart("KOREAN", "ENGLISH")
+    var isDownloaded by remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,23 +100,11 @@ fun Main() {
             )
         }
         Spacer(modifier = Modifier.size(30.dp))
-        var isDownloaded by remember {
-            mutableStateOf(false)
-        }
-        val koenTranslator = remember {
-            val options = TranslatorOptions.Builder()
-                .setSourceLanguage(TranslateLanguage.KOREAN)
-                .setTargetLanguage(TranslateLanguage.ENGLISH)
-                .build()
-            Translation.getClient(options)
-        }
-        DownloadModel(koenTranslator, onSuccess = { isDownloaded = true })
         Button(
             onClick = {
-                koenTranslator.translate(inputText)
-                    .addOnSuccessListener { translatedText ->
-                        tranText = translatedText
-                    }
+                val translated =TranslationPart("KOREAN", "ENGLISH")
+                translated.TranslateOnClick(inputText)
+                tranText = translated.tranText
             },
             enabled = isDownloaded,
             colors = ButtonDefaults.buttonColors(
@@ -121,24 +112,52 @@ fun Main() {
             )
         ) {
             Text(text = "번역")
+
         }
     }
 }
 
+class TranslationPart(startLang: String, targetLang: String) {
+    var tranText = ""
+    val options = TranslatorOptions.Builder()
+        .setSourceLanguage(TranslateLanguage.KOREAN)
+        .setTargetLanguage(TranslateLanguage.ENGLISH)
+        .build()
+    val koenTranslator = Translation.getClient(options)
+    var isDownloaded = false
 
-@Composable
-fun DownloadModel(
-    input: Translator,
-    onSuccess: () -> Unit
-) {
-    LaunchedEffect(key1 = input) {
+//    @Composable
+//    fun TranslateActive() {
+//        DownloadModel( onSuccess = { this.isDownloaded = true })
+//    }
+
+    fun TranslateOnClick(inputText: String) {
+        this.koenTranslator.translate(inputText)
+            .addOnSuccessListener { translatedText ->
+                this.tranText = translatedText
+            }
+    }
+
+    fun download() {
         val conditions = DownloadConditions.Builder()
             .requireWifi()
             .build()
-        input.downloadModelIfNeeded(conditions)
+        koenTranslator.downloadModelIfNeeded(conditions)
             .addOnSuccessListener {
-                onSuccess()
+                isDownloaded = true
             }
+    }
+    @Composable
+    fun DownloadModel() {
+        LaunchedEffect(key1 = koenTranslator) {
+            val conditions = DownloadConditions.Builder()
+                .requireWifi()
+                .build()
+            koenTranslator.downloadModelIfNeeded(conditions)
+                .addOnSuccessListener {
+                    isDownloaded = true
+                }
+        }
     }
 }
 
