@@ -1,4 +1,4 @@
-//강사님 추천 코드
+//강사님 추천 코드 v2
 package com.example.ml_kit_practice
 
 import android.os.Bundle
@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,26 +62,29 @@ fun Main(firebaseAnalytics: FirebaseAnalytics) {
     var inputText by remember { mutableStateOf("입력") }
     var tranText by remember { mutableStateOf("") }
     var textCount by remember { mutableIntStateOf(0) }
+    var isReady by remember { mutableStateOf(false) }
     val textSize by remember { mutableIntStateOf(20) }
     var id = "lms"
     var name = "lms"
-    var isDownloaded by remember {
-        mutableStateOf(false)
-    }
-    TransScreen(input = inputText, tranText = tranText, onInputChange = {
-        inputText = it
-        textCount = inputText.length
-        firebaseAnalytics.logEvent("change_value") {
-            param(FirebaseAnalytics.Param.ITEM_ID, id)
-            param(FirebaseAnalytics.Param.ITEM_NAME, name)
-            param(FirebaseAnalytics.Param.CONTENT_TYPE, "image")
-            param("new_value", it)
-        }
-    }, onClickTranslate = {
-        val translated = TranslationPart(TranslateLanguage.KOREAN, TranslateLanguage.ENGLISH)
-        translated.download()
-        translated.TranslateOnClick(inputText, onSuccess = { tranText = translated.tranText })
-    })
+    val translated = TranslationPart(TranslateLanguage.KOREAN, TranslateLanguage.ENGLISH)
+    translated.download(onSuccess = { isReady = true })
+    TransScreen(
+        input = inputText, tranText = tranText,
+        onInputChange = {
+            inputText = it
+            textCount = inputText.length
+            firebaseAnalytics.logEvent("change_value") {
+                param(FirebaseAnalytics.Param.ITEM_ID, id)
+                param(FirebaseAnalytics.Param.ITEM_NAME, name)
+                param(FirebaseAnalytics.Param.CONTENT_TYPE, "image")
+                param("new_value", it)
+            }
+        },
+        onClickTranslate = {
+            translated.TranslateOnClick(inputText, onSuccess = { tranText = translated.tranText })
+        },
+        isDownloaded = isReady,
+    )
 }
 
 @Composable
@@ -91,6 +93,7 @@ fun TransScreen(
     tranText: String,
     onInputChange: (String) -> Unit,
     onClickTranslate: () -> Unit,
+    isDownloaded: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -131,7 +134,7 @@ fun TransScreen(
         Spacer(modifier = Modifier.size(30.dp))
         Button(
             onClick = { onClickTranslate() },
-            enabled = true,
+            enabled = isDownloaded,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFd69f47)
             )
@@ -144,17 +147,12 @@ fun TransScreen(
 
 class TranslationPart(startLang: String, targetLang: String) {
     var tranText = ""
-    val options = TranslatorOptions.Builder()
-        .setSourceLanguage(startLang)
-        .setTargetLanguage(targetLang)
-        .build()
-    val koenTranslator = Translation.getClient(options)
-    var isDownloaded = false
-
-//    @Composable
-//    fun TranslateActive() {
-//        DownloadModel( onSuccess = { this.isDownloaded = true })
-//    }
+    val koenTranslator = Translation.getClient(
+        TranslatorOptions.Builder()
+            .setSourceLanguage(startLang)
+            .setTargetLanguage(targetLang)
+            .build()
+    )
 
     fun TranslateOnClick(inputText: String, onSuccess: (String) -> Unit) {
         this.koenTranslator.translate(inputText)
@@ -164,15 +162,16 @@ class TranslationPart(startLang: String, targetLang: String) {
             }
     }
 
-    fun download() {
+    fun download(onSuccess: () -> Unit) {
         val conditions = DownloadConditions.Builder()
             .requireWifi()
             .build()
         koenTranslator.downloadModelIfNeeded(conditions)
             .addOnSuccessListener {
-                isDownloaded = true
+                onSuccess()
             }
     }
+
 }
 
 
@@ -180,76 +179,6 @@ class TranslationPart(startLang: String, targetLang: String) {
 @Composable
 fun GreetingPreview() {
     ML_Kit_PracticeTheme {
-        TransScreen("입력", "결과", {}, {})
-    }
-}
-
-@Composable
-fun Main_Preview() {
-    var inputText by remember { mutableStateOf("입력") }
-    var tranText by remember { mutableStateOf("") }
-    var textCount by remember { mutableIntStateOf(0) }
-    val textSize by remember { mutableIntStateOf(20) }
-    var id = "lms"
-    var name = "lms"
-    var isDownloaded by remember {
-        mutableStateOf(false)
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.size(80.dp))
-        TextField(
-            value = inputText,
-            onValueChange = { newText ->
-                inputText = newText
-                textCount = inputText.length
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(200.dp),
-            shape = RoundedCornerShape(20.dp),
-            colors = TextFieldDefaults.colors(
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
-            ),
-            textStyle = TextStyle(fontSize = textSize.sp)
-        )
-        Spacer(modifier = Modifier.size(30.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(200.dp)
-                .background(
-                    color = Color(0xfffaf2e6),
-                    shape = RoundedCornerShape(20.dp)
-                )
-                .padding(15.dp)
-        ) {
-            Text(
-                text = tranText,
-                fontSize = textSize.sp
-            )
-        }
-        Spacer(modifier = Modifier.size(30.dp))
-        Button(
-            onClick = {
-                val translated =
-                    TranslationPart(TranslateLanguage.KOREAN, TranslateLanguage.ENGLISH)
-                translated.download()
-                translated.TranslateOnClick(inputText, { tranText = translated.tranText })
-                tranText = translated.tranText
-            },
-            enabled = isDownloaded,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFd69f47)
-            )
-        ) {
-            Text(text = "번역")
-
-        }
+        TransScreen("입력", "결과", {}, {}, false)
     }
 }
