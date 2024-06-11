@@ -1,0 +1,76 @@
+// data class package분리 예제
+
+package com.example.myapplication
+
+import android.os.Bundle
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.runtime.*
+import com.example.myapplication.A.MyComposable
+import com.example.myapplication.A.MyData
+import com.example.myapplication.A.setMydata
+import com.example.myapplication.ui.theme.MyApplicationTheme
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MyApplicationTheme {
+                // 상태를 remember로 관리
+
+                Main()
+
+                // 데이터 업데이트 예제
+
+            }
+        }
+    }
+}
+
+@Composable
+fun Main() {
+    val myData = remember { mutableStateOf(MyData("Initial Data")) }
+    var checkstate by remember {
+        mutableIntStateOf(0)
+    }
+    LaunchedEffect(checkstate, myData) {
+        setMydata(checkstate, myData)
+    }
+    Column {
+        MyComposable(myData = myData)
+        Button(onClick = { checkstate++
+        Log.d("test", myData.value.toString())}) {
+        }
+    }
+}
+
+
+
+//다른 패키지
+
+package com.example.myapplication.A
+
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+
+@Composable
+fun MyComposable(myData: MutableState<MyData>) {
+    val data by myData
+    Text(text = data.data)
+}
+
+fun setMydata(checkstate: Int, myData: MutableState<MyData>) {
+    myData.value = myData.value.copy(data = checkstate.toString())
+}
+
+
+package com.example.myapplication.A
+
+data class MyData(
+    var data: String
+)
