@@ -17,3 +17,4 @@ Intel AI For Future Workforce
 - 240524_Practice_1 : kotlin 알고리즘 연습
 - 240527_Assignment : kotiln 알고리즘 연습 // range 뒤에서부터 읽기
 - 240529_Practice_prj : ML kit 연습
+- 240613_Practice : mongoDB 연습
